@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bianca Oliveira · Nutrição — Opção C (Minimal)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--marrom:#4A2E27;--terracota:#A85A47;--laranja:#D7875B;--bege:#DCC6B4;--off:#F8F6F1;--linha:rgba(74,46,39,.14);--txt:#6a4f46;
+    --serif:'Playfair Display',Georgia,serif;--sans:'Montserrat',system-ui,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--off);color:var(--txt);font-family:var(--sans);font-weight:300;line-height:1.85;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none} img{display:block;max-width:100%}
+  h1,h2,h3{font-family:var(--serif);font-weight:400;color:var(--marrom);line-height:1.15}
+  em{font-style:italic;color:var(--terracota)}
+  .label{font-size:.66rem;letter-spacing:.42em;text-transform:uppercase;font-weight:400;color:var(--terracota)}
+  .wrap{width:min(1100px,100% - 48px);margin-inline:auto}
+  .link{display:inline-flex;align-items:center;gap:16px;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;font-weight:500;color:var(--marrom);padding-bottom:8px;border-bottom:1px solid var(--marrom);transition:gap .35s,color .35s,border-color .35s}
+  .link:hover{gap:26px;color:var(--terracota);border-color:var(--terracota)}
+
+  /* hero split */
+  .hero{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+  .hero-l{display:flex;flex-direction:column;justify-content:space-between;padding:44px clamp(24px,6vw,96px)}
+  .top{display:flex;justify-content:space-between;align-items:center}
+  .top svg{width:44px;height:48px}
+  .top nav{display:flex;gap:30px;font-size:.64rem;letter-spacing:.3em;text-transform:uppercase}
+  .top nav a{opacity:.7;transition:opacity .3s}.top nav a:hover{opacity:1}
+  .hero-mid .label{margin-bottom:34px;display:block}
+  .hero h1{font-size:clamp(3rem,5.6vw,5.2rem);letter-spacing:.01em}
+  .hero h1 small{display:block;font-family:var(--sans);font-size:.7rem;letter-spacing:.6em;text-transform:uppercase;color:var(--terracota);margin-top:14px;font-weight:400}
+  .hero .tag{font-family:var(--serif);font-style:italic;font-size:1.35rem;color:var(--marrom);margin:44px 0 18px;max-width:440px;line-height:1.5}
+  .hero .txt{max-width:420px;font-size:.92rem}
+  .hero .link{margin-top:44px}
+  .hero-foot{display:flex;justify-content:space-between;font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;opacity:.6}
+  .hero-r{background:var(--bege);position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+  .hero-r img{height:90%;width:auto;position:relative;z-index:2}
+  .hero-r .ring{position:absolute;width:76%;aspect-ratio:1;border-radius:50%;border:1px solid rgba(168,90,71,.35);top:12%;left:12%}
+  .hero-r .ring2{position:absolute;width:56%;aspect-ratio:1;border-radius:50%;background:rgba(248,246,241,.35);top:22%;left:22%}
+  .hero-r .cap{position:absolute;left:28px;bottom:28px;z-index:3;font-family:var(--serif);font-style:italic;color:var(--marrom);font-size:1rem;background:rgba(248,246,241,.7);backdrop-filter:blur(8px);padding:10px 18px}
+
+  /* chapters */
+  .chapter{padding:170px 0;border-bottom:1px solid var(--linha)}
+  .ch-head{display:grid;grid-template-columns:200px 1fr;gap:40px;margin-bottom:70px}
+  .ch-num{font-family:var(--serif);font-size:1rem;color:var(--terracota)}
+  .ch-num span{display:block;font-family:var(--sans);font-size:.62rem;letter-spacing:.38em;text-transform:uppercase;margin-top:6px;color:var(--txt)}
+  .ch-head h2{font-size:clamp(2.4rem,4.6vw,4rem);max-width:780px}
+  .ch-body{display:grid;grid-template-columns:200px 1fr 1fr;gap:40px}
+  .ch-body p{margin-bottom:20px}
+  .ch-body .pull{grid-column:2 / 4;font-family:var(--serif);font-size:clamp(1.5rem,2.6vw,2.1rem);line-height:1.45;color:var(--marrom);margin-top:60px;padding-top:50px;border-top:1px solid var(--linha)}
+
+  /* metodo list */
+  .list{grid-column:2 / 4}
+  .item{display:grid;grid-template-columns:70px 1fr 1.2fr;gap:30px;padding:34px 0;border-top:1px solid var(--linha);align-items:baseline;transition:padding .4s,background .4s}
+  .item:last-child{border-bottom:1px solid var(--linha)}
+  .item:hover{padding-left:18px;background:linear-gradient(90deg,rgba(220,198,180,.35),transparent)}
+  .item .n{font-family:var(--serif);font-style:italic;color:var(--terracota);font-size:1.1rem}
+  .item h3{font-size:1.5rem}
+  .item p{font-size:.9rem}
+
+  /* convite */
+  .convite{background:var(--bege);padding:170px 0;text-align:center;position:relative;overflow:hidden}
+  .convite .leaf{position:absolute;width:300px;opacity:.18;color:var(--terracota)}
+  .convite .leaf.l1{left:-40px;top:40px;transform:rotate(-20deg)}
+  .convite .leaf.l2{right:-30px;bottom:30px;transform:rotate(160deg)}
+  .convite h2{font-size:clamp(2.6rem,5.4vw,4.6rem);margin:30px 0 40px}
+  .convite p{max-width:620px;margin:0 auto 18px}
+  .convite .link{margin-top:40px}
+
+  /* form */
+  .form{padding:170px 0}
+  .form-grid{display:grid;grid-template-columns:200px 1fr;gap:40px}
+  .form h2{font-size:clamp(2.4rem,4.4vw,3.8rem);margin-bottom:26px}
+  .form .intro{max-width:560px;margin-bottom:70px}
+  form{max-width:720px}
+  .q{display:grid;grid-template-columns:40px 1fr;gap:16px;padding:26px 0;border-top:1px solid var(--linha)}
+  .q:last-of-type{border-bottom:1px solid var(--linha)}
+  .q .i{font-family:var(--serif);font-style:italic;color:var(--terracota);padding-top:6px}
+  .q label{display:block;font-size:.66rem;letter-spacing:.32em;text-transform:uppercase;margin-bottom:8px;color:var(--marrom);font-weight:400}
+  .q input,.q textarea{width:100%;border:0;background:transparent;font:400 1.25rem var(--serif);color:var(--marrom);outline:none;resize:none;padding:4px 0}
+  .q input::placeholder,.q textarea::placeholder{color:#c4b0a2;font-style:italic}
+  .q:focus-within{background:linear-gradient(90deg,rgba(220,198,180,.28),transparent)}
+  .submit{margin-top:50px;display:flex;align-items:center;gap:30px;flex-wrap:wrap}
+  .submit button{background:var(--marrom);color:var(--off);border:0;padding:1.3em 2.8em;font:500 .7rem var(--sans);letter-spacing:.3em;text-transform:uppercase;cursor:pointer;transition:background .35s,letter-spacing .35s}
+  .submit button:hover{background:var(--terracota);letter-spacing:.36em}
+  .submit small{font-size:.74rem;opacity:.7}
+  .ok{display:none;padding:60px 0}
+  .ok h3{font-size:2.4rem;margin-bottom:14px}
+  form.sent .fields{display:none} form.sent .ok{display:block}
+
+  footer{padding:80px 0 50px}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap}
+  footer svg{width:46px;height:50px}
+  footer p{font-family:var(--serif);font-style:italic;color:var(--marrom)}
+  footer small{font-size:.6rem;letter-spacing:.34em;text-transform:uppercase;opacity:.6}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity 1.2s ease,transform 1.2s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr}
+    .hero-r{min-height:70vh;order:-1}
+    .hero-l{padding:40px 24px;gap:60px}
+    .top{position:absolute;top:24px;left:24px;right:24px;z-index:5}
+    .top nav{display:none}
+    .hero-foot{display:none}
+    .chapter,.convite,.form{padding:100px 0}
+    .ch-head,.ch-body,.form-grid{grid-template-columns:1fr;gap:20px}
+    .ch-body>*{grid-column:auto!important}.ch-body>div:empty{display:none}
+    .item{grid-template-columns:44px 1fr;gap:10px 16px}
+    .item p{grid-column:2}
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="cobre" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A2E27"/><stop offset=".55" stop-color="#A85A47"/><stop offset="1" stop-color="#D7875B"/></linearGradient>
+  <symbol id="folha" viewBox="0 0 100 100">
+    <path d="M12 92 C 34 70, 58 44, 88 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M88 8 C 62 12, 36 30, 30 72 C 56 64, 78 44, 88 8 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M40 60 C 50 52, 58 42, 66 34 M48 50 L 44 40 M58 40 L 54 28 M50 54 L 62 52 M60 42 L 72 40" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="bo" viewBox="0 0 120 130">
+    <text x="2" y="88" font-family="Playfair Display, serif" font-size="96" fill="url(#cobre)">B</text>
+    <text x="36" y="120" font-family="Playfair Display, serif" font-size="96" fill="url(#cobre)">O</text>
+    <use href="#folha" x="58" y="60" width="40" height="40" style="color:#A85A47"/>
+  </symbol>
+</defs></svg>
+
+<header class="hero">
+  <div class="hero-l">
+    <div class="top">
+      <svg><use href="#bo"/></svg>
+      <nav><a href="#sobre">Sobre</a><a href="#metodo">Método</a><a href="#lista">Lista de espera</a></nav>
+    </div>
+    <div class="hero-mid reveal">
+      <span class="label">Nutrição · Saúde · Bem-estar</span>
+      <h1>Bianca Oliveira<small>Nutricionista</small></h1>
+      <p class="tag">Nutrição com estratégia, individualidade e propósito.</p>
+      <p class="txt">Acredito que resultados consistentes começam quando entendemos que cada pessoa precisa de um caminho próprio. Meu trabalho é transformar conhecimento nutricional em estratégias que façam sentido para sua rotina, seus objetivos e sua saúde.</p>
+      <a href="#metodo" class="link">Conheça minha forma de trabalhar <span>→</span></a>
+    </div>
+    <div class="hero-foot"><span>Atendimentos em breve</span><span>2027</span></div>
+  </div>
+  <div class="hero-r">
+    <div class="ring"></div><div class="ring2"></div>
+    <img src="assets/bianca-recorte.webp" alt="Bianca Oliveira" class="reveal">
+    <div class="cap">Uma alimentação que funciona na sua vida.</div>
+  </div>
+</header>
+
+<section class="chapter" id="sobre">
+  <div class="wrap">
+    <div class="ch-head reveal">
+      <div class="ch-num">01<span>Minha história</span></div>
+      <h2>Prazer, sou a <em>Bianca!</em></h2>
+    </div>
+    <div class="ch-body reveal">
+      <div></div>
+      <div>
+        <p>Escolhi a Nutrição porque sempre enxerguei na alimentação uma ferramenta poderosa de transformação.</p>
+        <p>A possibilidade de contribuir para a saúde, a qualidade de vida e a forma como uma pessoa se relaciona com o próprio corpo foi o que me fez escolher esse caminho.</p>
+      </div>
+      <div>
+        <p>Ao longo da minha trajetória, fui compreendendo que bons resultados não dependem apenas de saber o que comer, mas de entender como colocar esse conhecimento em prática.</p>
+        <p>Acredito em uma nutrição que une ciência e individualidade. Que considera exames, hábitos, preferências, rotina e objetivos para construir estratégias realmente aplicáveis à vida de cada pessoa.</p>
+      </div>
+      <p class="pull">“Porque não basta saber o que precisa ser feito. <em>É preciso encontrar a melhor maneira de fazer acontecer.</em>”</p>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="metodo">
+  <div class="wrap">
+    <div class="ch-head reveal">
+      <div class="ch-num">02<span>Como quero cuidar de você</span></div>
+      <h2>Resultados não acontecem por acaso. <em>Eles são construídos.</em></h2>
+    </div>
+    <div class="ch-body">
+      <div></div>
+      <p class="reveal" style="grid-column:2/4;max-width:640px;margin-bottom:50px">Acredito em um acompanhamento nutricional que vai além da entrega de um plano alimentar. Um processo que começa com uma avaliação completa, passa pela definição de objetivos e se desenvolve por meio de estratégias individualizadas, acompanhamento e ajustes ao longo do tempo.</p>
+      <div></div>
+      <div class="list reveal">
+        <div class="item"><span class="n">i.</span><h3>Avaliação completa</h3><p>Exames, hábitos, preferências e rotina — entender suas necessidades.</p></div>
+        <div class="item"><span class="n">ii.</span><h3>Definição de objetivos</h3><p>Identificar com clareza o que precisa ser trabalhado.</p></div>
+        <div class="item"><span class="n">iii.</span><h3>Estratégia individualizada</h3><p>Mudanças construídas para a sua vida real.</p></div>
+        <div class="item"><span class="n">iv.</span><h3>Acompanhamento e ajustes</h3><p>Evolução contínua e autonomia para manter seus resultados ao longo da vida.</p></div>
+      </div>
+      <p class="pull reveal">Não se trata apenas de seguir um plano. <em>Trata-se de aprender a fazer escolhas que te aproximem dos seus objetivos.</em></p>
+    </div>
+  </div>
+</section>
+
+<section class="convite">
+  <svg class="leaf l1" viewBox="0 0 100 100"><use href="#folha"/></svg>
+  <svg class="leaf l2" viewBox="0 0 100 100"><use href="#folha"/></svg>
+  <div class="wrap reveal">
+    <span class="label">03 · Vamos construir seus resultados?</span>
+    <h2>Seus objetivos<br>merecem <em>um plano.</em></h2>
+    <p>Se você busca uma nutrição que combine conhecimento científico, estratégia e respeito à sua individualidade, talvez esse seja o acompanhamento que você procura.</p>
+    <p>Estou preparando uma nova etapa da minha trajetória e, em breve, iniciarei meus atendimentos. Entre na lista de espera para receber informações sobre a abertura das vagas e dar o primeiro passo em direção aos seus objetivos.</p>
+    <a href="#lista" class="link">Quero entrar na lista de espera <span>→</span></a>
+  </div>
+</section>
+
+<section class="form" id="lista">
+  <div class="wrap form-grid">
+    <div class="ch-num reveal">04<span>Lista de espera</span></div>
+    <div class="reveal">
+      <h2>Vamos dar o <em>primeiro passo?</em></h2>
+      <p class="intro">Deixe seus dados para receber informações sobre a abertura dos meus atendimentos. Quero conhecer seus objetivos e, em breve, compartilhar com você como poderemos trabalhar juntos para alcançá-los.</p>
+      <form onsubmit="event.preventDefault();this.classList.add('sent')">
+        <div class="fields">
+          <div class="q"><span class="i">a.</span><div><label for="nome">Nome completo</label><input id="nome" required placeholder="Seu nome"></div></div>
+          <div class="q"><span class="i">b.</span><div><label for="email">E-mail</label><input id="email" type="email" required placeholder="seu@email.com"></div></div>
+          <div class="q"><span class="i">c.</span><div><label for="whats">WhatsApp</label><input id="whats" inputmode="tel" required placeholder="(00) 00000-0000"></div></div>
+          <div class="q"><span class="i">d.</span><div><label for="obj">Qual é o principal objetivo que você deseja alcançar com o acompanhamento nutricional?</label><textarea id="obj" rows="3" required placeholder="Escreva com suas palavras…"></textarea></div></div>
+          <div class="submit"><button type="submit">Entrar na lista de espera</button><small>Seus dados são usados apenas para contato sobre os atendimentos.</small></div>
+        </div>
+        <div class="ok"><h3>Você está na <em>lista!</em></h3><p>Obrigada pela confiança. Assim que as vagas abrirem, você será uma das primeiras a saber.</p></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">
+  <svg><use href="#bo"/></svg>
+  <p>Cuidado nutricional para a sua melhor versão.</p>
+  <small>Bianca Oliveira · Nutrição · © 2027</small>
+</div></footer>
+
+<script>
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  const w=document.getElementById('whats');
+  w.addEventListener('input',()=>{let d=w.value.replace(/\D/g,'').slice(0,11);w.value=d.length>6?`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`:d.length>2?`(${d.slice(0,2)}) ${d.slice(2)}`:d});
+</script>
+</body>
+</html>
