@@ -1,15 +1,9 @@
 'use client'
 import { useState, type FormEvent } from 'react'
+import { mascararWhatsapp } from '@/lib/contatos/formatar'
 import { Folha } from './SvgDefs'
 
 type Erros = Partial<Record<'nome' | 'email' | 'whatsapp' | 'objetivo' | 'consentimento' | 'geral', string>>
-
-export function mascararWhatsapp(v: string): string {
-  const d = v.replace(/\D/g, '').slice(0, 11)
-  if (d.length > 6) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
-  if (d.length > 2) return `(${d.slice(0, 2)}) ${d.slice(2)}`
-  return d
-}
 
 export function WaitlistForm() {
   const [whats, setWhats] = useState('')

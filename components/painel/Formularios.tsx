@@ -3,8 +3,7 @@ import { useActionState, useState, useTransition } from 'react'
 import {
   adicionarNotaAction, atualizarDadosAction, criarContatoAction, mudarEtapaAction, type EstadoForm,
 } from '@/app/painel/(app)/actions'
-import { mascararWhatsapp } from '@/components/site/WaitlistForm'
-import { formatarWhatsapp } from '@/lib/contatos/formatar'
+import { formatarWhatsapp, mascararWhatsapp } from '@/lib/contatos/formatar'
 import { ETAPAS, ORIGENS, type Contato, type Etapa } from '@/lib/contatos/types'
 
 const Erro = ({ e }: { e?: string }) => (e ? <p className="pn-erro" role="alert">{e}</p> : null)
