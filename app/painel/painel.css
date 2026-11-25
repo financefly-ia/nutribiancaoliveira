@@ -1,4 +1,7 @@
 /* Painel / mini-CRM — mesma paleta e tipografia do site, pensado primeiro para o celular. */
+/* neutraliza estilos de elemento do site (nav fixa, form com card, section com padding) */
+.pn form{background:none;padding:0;box-shadow:none;border-radius:0}
+.pn section{padding:0}
 .pn{min-height:100vh;background:var(--papel);color:var(--texto);font-size:15px;line-height:1.6}
 .pn h1,.pn h2,.pn h3{font-family:var(--serif);font-weight:400;color:var(--marrom);line-height:1.15}
 .pn-eyebrow{font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--terracota);font-weight:500}
@@ -26,7 +29,7 @@
 .pn-login-card{width:min(380px,100%);text-align:center}
 .pn-login-mono{width:72px;height:78px;margin:0 auto 18px;display:block}
 .pn-login h1{font-size:2.6rem;margin:6px 0 30px}
-.pn-login-form{text-align:left;background:var(--off);padding:28px 22px;border-radius:14px;box-shadow:0 30px 60px -40px rgba(74,46,39,.45)}
+.pn .pn-login-form{text-align:left;background:var(--off);padding:28px 22px;border-radius:14px;box-shadow:0 30px 60px -40px rgba(74,46,39,.45)}
 .pn-login-form .pn-btn{margin-top:18px}
 
 /* topo */
@@ -74,7 +77,7 @@
 
 /* detalhe */
 .pn-voltar{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--terracota)}
-.pn-box{background:var(--off);border-radius:14px;padding:20px 18px;margin-bottom:14px}
+.pn .pn-box{background:var(--off);border-radius:14px;padding:20px 18px;margin-bottom:14px}
 .pn-box h2{font-size:1.3rem;margin-bottom:12px}
 .pn-head h1{font-size:2rem;margin:4px 0 6px;word-break:break-word}
 .pn-dados{display:grid;gap:10px;margin-top:14px}

@@ -99,8 +99,14 @@ export async function adicionarNota(id: string, texto: string, store: ContatoSto
 
 const semAcento = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
 
-export async function listarContatos(store: ContatoStore, filtro: { etapa?: Etapa; busca?: string } = {}): Promise<Contato[]> {
-  let cs = await store.list()
+export type Filtro = { etapa?: Etapa; busca?: string }
+
+export async function listarContatos(store: ContatoStore, filtro: Filtro = {}): Promise<Contato[]> {
+  return filtrarContatos(await store.list(), filtro)
+}
+
+export function filtrarContatos(todos: Contato[], filtro: Filtro = {}): Contato[] {
+  let cs = todos
   if (filtro.etapa) cs = cs.filter((c) => c.etapa === filtro.etapa)
   const q = semAcento(filtro.busca?.trim() ?? '')
   if (q) cs = cs.filter((c) => semAcento([c.nome, c.email, c.whatsapp, c.objetivo].filter(Boolean).join(' ')).includes(q))
