@@ -3,15 +3,16 @@ import { notFound } from 'next/navigation'
 import { Badge } from '@/components/painel/Badge'
 import { EditarDados, NovaNota, SeletorEtapa } from '@/components/painel/Formularios'
 import { Topo } from '@/components/painel/Topo'
-import { getStore } from '@/lib/contatos/get-store'
+import { storeDoPainel } from '@/lib/contatos/dados-painel'
 import { formatarDataHora, formatarWhatsapp, linkWhatsapp } from '@/lib/contatos/formatar'
 import { rotuloOrigem } from '@/lib/contatos/types'
 
 export default async function ContatoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const store = await storeDoPainel()
   let c
   try {
-    c = await getStore().get(id)
+    c = await store.get(id)
   } catch {
     c = null
   }

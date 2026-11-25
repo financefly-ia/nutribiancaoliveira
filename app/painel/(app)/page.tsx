@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Badge } from '@/components/painel/Badge'
 import { Topo } from '@/components/painel/Topo'
-import { getStore } from '@/lib/contatos/get-store'
+import { storeDoPainel } from '@/lib/contatos/dados-painel'
 import { formatarData, linkWhatsapp } from '@/lib/contatos/formatar'
 import { filtrarContatos, resumo } from '@/lib/contatos/servico'
 import { ehEtapa, ETAPAS, rotuloOrigem } from '@/lib/contatos/types'
@@ -14,7 +14,7 @@ export default async function Painel({ searchParams }: { searchParams: Promise<R
   const etapa = ehEtapa(etapaParam) ? etapaParam : undefined
   const busca = um(sp.q).trim()
 
-  const todos = await getStore().list()
+  const todos = await (await storeDoPainel()).list()
   const r = resumo(todos)
   const contatos = filtrarContatos(todos, { etapa, busca })
 
