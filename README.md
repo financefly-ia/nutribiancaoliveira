@@ -1,0 +1,66 @@
+# Bianca Oliveira · Nutrição
+
+Site da Bianca com lista de espera e um mini-CRM privado (`/painel`).
+
+- **Site:** Next.js 16 (App Router). O visual é uma cópia fiel de [`mockups/a-editorial.html`](mockups/a-editorial.html).
+- **Dados:** Vercel Blob em modo **privado**, um JSON por contato em `contatos/<id>.json`.
+- **Painel:** `/painel`, protegido por senha, com sessão de 30 dias. Não há link para ele no site.
+- Design e plano: [`docs/superpowers/`](docs/superpowers/).
+
+## Rodar localmente
+
+```bash
+npm install
+cp .env.example .env.local   # preencha ADMIN_PASSWORD e SESSION_SECRET
+npm run dev                  # http://localhost:3000
+npm test                     # testes (Vitest)
+```
+
+Sem `BLOB_READ_WRITE_TOKEN`, as inscrições ficam salvas em `.data/contatos/`. Essa pasta fica fora do git.
+
+## Publicar na Vercel (uma vez só)
+
+1. **Importar o projeto:** em [vercel.com/new](https://vercel.com/new), escolha o repositório `financefly-ia/nutribiancaoliveira`. O framework é detectado sozinho (Next.js). Clique em **Deploy**.
+2. **Criar o Blob:** no projeto, abra **Storage → Create Database → Blob**, dê um nome (ex.: `bianca-contatos`) e clique em **Connect** para ligá-lo ao projeto. A Vercel cria a variável `BLOB_READ_WRITE_TOKEN` automaticamente.
+3. **Variáveis de ambiente:** em **Settings → Environment Variables**, adicione para *Production* e *Preview*:
+   | Nome | Valor |
+   |---|---|
+   | `ADMIN_PASSWORD` | a senha que a Bianca vai usar no painel |
+   | `SESSION_SECRET` | uma string aleatória longa. Para gerar: `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` |
+   | `NEXT_PUBLIC_SITE_URL` | *(opcional)* o domínio final, ex.: `https://nutribiancaoliveira.com.br` |
+4. **Refazer o deploy:** em **Deployments**, abra o último deploy, clique em **⋯ → Redeploy** e confirme. É isso que faz as variáveis valerem.
+5. **Testar:** abra o site no celular, entre na lista de espera com um contato de teste e confira em `/painel`.
+
+A partir daí, todo `git push` na branch `main` publica o site automaticamente.
+
+> **Trocar a senha:** altere `ADMIN_PASSWORD` e faça o redeploy. Para derrubar todas as sessões abertas, troque também o `SESSION_SECRET`.
+
+## Instalar o painel no celular da Bianca
+
+O painel pode ficar na tela inicial do celular como se fosse um app, com o ícone BO.
+
+**iPhone (Safari)**
+1. Abra `https://<endereço-do-site>/painel` e entre com a senha.
+2. Toque em **Compartilhar** (o quadrado com a seta para cima).
+3. Toque em **Adicionar à Tela de Início** e depois em **Adicionar**.
+
+**Android (Chrome)**
+1. Abra `https://<endereço-do-site>/painel` e entre com a senha.
+2. Toque no menu **⋮**.
+3. Toque em **Adicionar à tela inicial** (ou **Instalar app**) e confirme.
+
+Ela entra com a senha uma vez e continua logada por 30 dias.
+
+## Estrutura
+
+```
+app/                     páginas (site, privacidade, painel) e API
+  api/lista-espera/      POST da lista de espera
+  painel/                login, mini-CRM e exportação CSV
+components/site/         seções do site e formulário
+components/painel/       topo, badge e formulários do painel
+lib/contatos/            tipos, validação, regras, armazenamento e CSV
+lib/auth/                sessão (cookie assinado) e proteção do painel
+tests/                   testes Vitest
+mockups/                 protótipos HTML (só referência, fora do site)
+```
