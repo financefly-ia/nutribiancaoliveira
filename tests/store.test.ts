@@ -28,6 +28,11 @@ describe.each([
     expect((await s.list()).map((x) => x.nome)).toEqual(['Novo'])
   })
   test('get inexistente → null', async () => expect(await mk().get('zzz')).toBeNull())
+  test('del remove; del inexistente não lança', async () => {
+    const s = mk(); await s.put(c('a', '2026-01-01T00:00:00Z'))
+    await s.del('a'); await s.del('a')
+    expect(await s.get('a')).toBeNull()
+  })
   test('lista vazia', async () => expect(await mk().list()).toEqual([]))
   test('id inválido é rejeitado', async () => {
     await expect(mk().get('../x')).rejects.toThrow()

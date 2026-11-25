@@ -75,6 +75,16 @@ export async function atualizarDados(id: string, input: unknown, store: ContatoS
   else delete novo.email
   if (d.objetivo) novo.objetivo = d.objetivo
   else delete novo.objetivo
+  // Invariante: contato com e-mail fica em id = hash(e-mail); sem e-mail, id aleatório.
+  // Assim uma inscrição futura com o e-mail novo cai neste contato, e o e-mail antigo não aponta mais para ele.
+  const idDesejado = d.email ? idPorEmail(d.email) : atual.email ? novoId() : id
+  if (idDesejado !== id) {
+    if (await store.get(idDesejado)) return EMAIL_EM_USO
+    novo.id = idDesejado
+    await store.put(novo)
+    await store.del(id)
+    return { ok: true, dados: { id: idDesejado } }
+  }
   await store.put(novo)
   return { ok: true, dados: { id } }
 }

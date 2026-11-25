@@ -4,6 +4,8 @@ export interface ContatoStore {
   get(id: string): Promise<Contato | null>
   put(c: Contato): Promise<void>
   list(): Promise<Contato[]>
+  /** Uso interno (mover contato ao trocar e-mail). Não há exclusão no painel. */
+  del(id: string): Promise<void>
 }
 
 const ID_RE = /^[a-z0-9]{1,64}$/
@@ -30,6 +32,10 @@ export function memoryStore(): ContatoStore {
     },
     async list() {
       return ordenarRecentes([...m.values()].map(clone))
+    },
+    async del(id) {
+      assertId(id)
+      m.delete(id)
     },
   }
 }

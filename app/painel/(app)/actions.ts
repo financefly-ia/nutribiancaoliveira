@@ -31,14 +31,17 @@ export async function atualizarDadosAction(id: string, prev: EstadoForm, fd: For
   await exigirSessao()
   const valores = campos(fd, ['nome', 'whatsapp', 'email', 'objetivo', 'origem'])
   const versao = (prev.versao ?? 0) + 1
+  let novoId = id
   try {
     const r = await atualizarDados(id, valores, getStore())
     if (!r.ok) return { erros: r.erros, valores, versao }
+    novoId = r.dados.id
   } catch (e) {
     console.error('[painel] atualizar dados', e)
     return { ...FALHA, valores, versao }
   }
   revalidatePath('/painel', 'layout')
+  if (novoId !== id) redirect(`/painel/contato/${novoId}`) // o contato mudou de id (e-mail trocado)
   return { ok: true, valores, versao }
 }
 

@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { assertId, ordenarRecentes, type ContatoStore } from './store'
 import type { Contato } from './types'
@@ -33,6 +33,10 @@ export function fileStore(dir = join(/*turbopackIgnore: true*/ process.cwd(), '.
         nomes.filter((n) => n.endsWith('.json')).map(async (n) => JSON.parse(await readFile(/*turbopackIgnore: true*/ join(dir, n), 'utf8')) as Contato),
       )
       return ordenarRecentes(cs)
+    },
+    async del(id) {
+      assertId(id)
+      await rm(/*turbopackIgnore: true*/ caminho(id), { force: true })
     },
   }
 }

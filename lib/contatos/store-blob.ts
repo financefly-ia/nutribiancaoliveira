@@ -1,4 +1,4 @@
-import { get, list, put } from '@vercel/blob'
+import { del, get, list, put } from '@vercel/blob'
 import { assertId, ordenarRecentes, type ContatoStore } from './store'
 import type { Contato } from './types'
 
@@ -41,6 +41,10 @@ export function blobStore(): ContatoStore {
         for (const c of lote) if (c) out.push(c)
       }
       return ordenarRecentes(out)
+    },
+    async del(id) {
+      assertId(id)
+      await del(caminho(id))
     },
   }
 }
