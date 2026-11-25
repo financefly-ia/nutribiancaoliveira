@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: '#F1E9E0' }
 
-export default function RootLayout({ children }: LayoutProps<'/'>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${playfair.variable} ${montserrat.variable}`}>
       <body>{children}</body>
