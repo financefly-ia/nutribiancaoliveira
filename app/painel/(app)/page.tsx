@@ -1,38 +1,33 @@
 import Link from 'next/link'
-import { Cartao } from '@/components/painel/Cartao'
+import { Badge } from '@/components/painel/Badge'
 import { Topo } from '@/components/painel/Topo'
-import { modelosDoPainel, storeDoPainel } from '@/lib/contatos/dados-painel'
-import { diaMes, diasEntre, hojeSP, idadeNoAniversario, relativo } from '@/lib/contatos/datas'
-import { preencher } from '@/lib/contatos/mensagens'
-import { agendaDoDia, resumo } from '@/lib/contatos/servico'
+import { storeDoPainel } from '@/lib/contatos/dados-painel'
+import { formatarData, linkWhatsapp } from '@/lib/contatos/formatar'
+import { filtrarContatos, resumo } from '@/lib/contatos/servico'
+import { ehEtapa, ETAPAS, rotuloOrigem } from '@/lib/contatos/types'
 
-function saudacao(agora: Date) {
-  const h = Number(new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: 'numeric', hourCycle: 'h23' }).format(agora))
-  return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
-}
+const um = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? ''
 
-const dataExtenso = (agora: Date) =>
-  new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: 'numeric', month: 'long' }).format(agora)
+export default async function Painel({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const sp = await searchParams
+  const etapaParam = um(sp.etapa)
+  const etapa = ehEtapa(etapaParam) ? etapaParam : undefined
+  const busca = um(sp.q).trim()
 
-function Secao({ titulo, descricao, qtd, children }: { titulo: string; descricao: string; qtd: number; children: React.ReactNode }) {
-  return (
-    <section className="pn-secao">
-      <div className="pn-secao-head">
-        <h2>{titulo} <span>{qtd}</span></h2>
-        <p>{descricao}</p>
-      </div>
-      <div className="pn-cards">{children}</div>
-    </section>
-  )
-}
+  const todos = await (await storeDoPainel()).list()
+  const r = resumo(todos)
+  const contatos = filtrarContatos(todos, { etapa, busca })
 
-export default async function Hoje() {
-  const agora = new Date()
-  const hoje = hojeSP(agora)
-  const [todos, modelos] = await Promise.all([(await storeDoPainel()).list(), modelosDoPainel()])
-  const a = agendaDoDia(todos, hoje)
-  const r = resumo(todos, agora)
-  const nada = !a.retomar.length && !a.novos.length && !a.aniversariantes.length && !a.proximos.length
+  const url = (e?: string) => {
+    const p = new URLSearchParams()
+    if (e) p.set('etapa', e)
+    if (busca) p.set('q', busca)
+    const s = p.toString()
+    return s ? `/painel?${s}` : '/painel'
+  }
+  const exportar = new URLSearchParams()
+  if (etapa) exportar.set('etapa', etapa)
+  if (busca) exportar.set('q', busca)
 
   return (
     <>
@@ -40,84 +35,67 @@ export default async function Hoje() {
       <main className="pn-wrap pn-main">
         <div className="pn-hello">
           <div>
-            <p className="pn-eyebrow">{dataExtenso(agora)}</p>
-            <h1>{saudacao(agora)}, Bianca</h1>
+            <p className="pn-eyebrow">Mini-CRM</p>
+            <h1>Olá, Bianca</h1>
             <p>
-              {r.total} {r.total === 1 ? 'contato' : 'contatos'} · {r.porEtapa.paciente} {r.porEtapa.paciente === 1 ? 'paciente' : 'pacientes'} · +{r.siteUltimos7Dias} pelo site nesta semana
+              {r.total} {r.total === 1 ? 'contato' : 'contatos'} · +{r.siteUltimos7Dias} pelo site nos últimos 7 dias
             </p>
           </div>
           <div className="pn-acoes">
             <Link href="/painel/novo" className="pn-btn pn-btn-solid">+ Novo contato</Link>
+            <a href={`/painel/exportar${exportar.size ? `?${exportar}` : ''}`} className="pn-btn">Exportar planilha</a>
           </div>
         </div>
 
-        <div className="pn-resumo">
-          <div><b>{a.retomar.length}</b><span>para retomar</span></div>
-          <div><b>{a.novos.length}</b><span>novos sem contato</span></div>
-          <div><b>{a.aniversariantes.length}</b><span>{a.aniversariantes.length === 1 ? 'aniversário' : 'aniversários'} na semana</span></div>
+        <div className="pn-chips" role="navigation" aria-label="Filtrar por etapa">
+          <Link href={url()} className={`pn-chip${!etapa ? ' on' : ''}`}>
+            Todos <b>{r.total}</b>
+          </Link>
+          {ETAPAS.map((e) => (
+            <Link key={e.valor} href={url(e.valor)} className={`pn-chip${etapa === e.valor ? ' on' : ''}`}>
+              {e.rotulo} <b>{r.porEtapa[e.valor]}</b>
+            </Link>
+          ))}
         </div>
 
-        {nada ? (
+        <form className="pn-busca" action="/painel" role="search">
+          {etapa ? <input type="hidden" name="etapa" value={etapa} /> : null}
+          <input className="pn-input" type="search" name="q" defaultValue={busca} placeholder="Buscar por nome, e-mail, WhatsApp ou objetivo" aria-label="Buscar" />
+          <button className="pn-btn">Buscar</button>
+        </form>
+
+        {contatos.length === 0 ? (
           <div className="pn-vazio">
             <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#folha" /></svg>
-            <p>Tudo em dia por aqui. Quando marcar uma data para retomar uma conversa, ela aparece nesta tela.</p>
+            {r.total === 0 ? (
+              <p>Nenhum contato ainda. Quando alguém entrar na lista de espera, aparece aqui.</p>
+            ) : (
+              <p>Nenhum contato encontrado com esse filtro.</p>
+            )}
           </div>
-        ) : null}
-
-        {a.retomar.length ? (
-          <Secao titulo="Para retomar" descricao="Conversas que você marcou para hoje ou que ficaram para trás." qtd={a.retomar.length}>
-            {a.retomar.map((c) => (
-              <Cartao
-                key={c.id}
-                c={c}
-                objetivo={false}
-                mensagem={preencher(modelos[c.etapa], c)}
-                aviso={c.retomarEm === hoje ? 'Retomar hoje' : `Atrasado · era ${relativo(c.retomarEm!, hoje)}`}
-                avisoForte={c.retomarEm! < hoje}
-              />
+        ) : (
+          <div className="pn-cards">
+            {contatos.map((c) => (
+              <article key={c.id} className="pn-card">
+                <Link href={`/painel/contato/${c.id}`} className="pn-card-link" aria-label={`Abrir ${c.nome}`} />
+                <div className="pn-card-top">
+                  <div>
+                    <h3>{c.nome}</h3>
+                    <p className="pn-meta">
+                      {rotuloOrigem(c.origem)} · {formatarData(c.criadoEm)}
+                    </p>
+                  </div>
+                  <Badge etapa={c.etapa} />
+                </div>
+                {c.objetivo ? <p className="pn-obj">{c.objetivo}</p> : null}
+                <div className="pn-card-foot">
+                  <a href={linkWhatsapp(c.whatsapp)} target="_blank" rel="noopener noreferrer" className="pn-btn pn-btn-wa">WhatsApp</a>
+                  {c.notas[0] ? <span className="pn-meta">Última nota: {formatarData(c.notas[0].criadoEm)}</span> : null}
+                </div>
+              </article>
             ))}
-          </Secao>
-        ) : null}
-
-        {a.novos.length ? (
-          <Secao titulo="Novos na lista de espera" descricao="Ainda sem nenhum contato seu. Os que esperam há mais tempo aparecem primeiro." qtd={a.novos.length}>
-            {a.novos.map((c) => {
-              const dias = diasEntre(hojeSP(new Date(c.criadoEm)), hoje)
-              return (
-                <Cartao
-                  key={c.id}
-                  c={c}
-                  mensagem={preencher(modelos[c.etapa], c)}
-                  aviso={dias === 0 ? 'Entrou hoje' : `Esperando há ${dias} ${dias === 1 ? 'dia' : 'dias'}`}
-                  avisoForte={dias >= 3}
-                />
-              )
-            })}
-          </Secao>
-        ) : null}
-
-        {a.aniversariantes.length ? (
-          <Secao titulo="Aniversários" descricao="Nos próximos 7 dias. Uma mensagem nesse dia faz diferença." qtd={a.aniversariantes.length}>
-            {a.aniversariantes.map(({ contato: c, emDias }) => (
-              <Cartao
-                key={c.id}
-                c={c}
-                objetivo={false}
-                mensagem={preencher(modelos.aniversario, c)}
-                aviso={`${emDias === 0 ? 'Hoje!' : emDias === 1 ? 'Amanhã' : `Em ${emDias} dias`} · faz ${idadeNoAniversario(c.nascimento!, hoje)} anos`}
-                avisoForte={emDias === 0}
-              />
-            ))}
-          </Secao>
-        ) : null}
-
-        {a.proximos.length ? (
-          <Secao titulo="Próximos dias" descricao="Retomadas marcadas para esta semana." qtd={a.proximos.length}>
-            {a.proximos.map((c) => (
-              <Cartao key={c.id} c={c} objetivo={false} mensagem={preencher(modelos[c.etapa], c)} aviso={`${diaMes(c.retomarEm!)} · ${relativo(c.retomarEm!, hoje)}`} />
-            ))}
-          </Secao>
-        ) : null}
+          </div>
+        )}
       </main>
     </>
   )

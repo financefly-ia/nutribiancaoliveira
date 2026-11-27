@@ -3,12 +3,8 @@
 Site da Bianca com lista de espera e um mini-CRM privado (`/painel`).
 
 - **Site:** Next.js 16 (App Router). O visual é uma cópia fiel de [`mockups/a-editorial.html`](mockups/a-editorial.html).
-- **Dados:** Vercel Blob em modo **privado**, um documento JSON por coleção (`dados/contatos.json`, `dados/config.json`). Veja [Armazenamento](#armazenamento).
+- **Dados:** Vercel Blob em modo **privado**, um JSON por contato em `contatos/<id>.json`.
 - **Painel:** `/painel`, protegido por senha, com sessão de 30 dias. Não há link para ele no site.
-  - **Hoje:** conversas para retomar, novos na lista de espera sem contato e aniversários da semana.
-  - **Contatos:** lista, busca, filtro por etapa e exportação para planilha.
-  - **Contato:** mensagem pronta para o WhatsApp, "Fiz contato hoje" com data para retomar, follow-up, etapa e histórico.
-  - **Mensagens:** modelos de mensagem por etapa (`{nome}`, `{nome_completo}`, `{objetivo}`).
 - Design e plano: [`docs/superpowers/`](docs/superpowers/).
 
 ## Rodar localmente
@@ -20,17 +16,7 @@ npm run dev                  # http://localhost:3000
 npm test                     # testes (Vitest)
 ```
 
-Sem `BLOB_READ_WRITE_TOKEN`, os dados ficam em `.data/` (fora do git). Para testar o build de produção localmente sem Blob: `npm run build && ARMAZENAMENTO=arquivo npx next start`.
-
-## Armazenamento
-
-O plano grátis do Vercel Blob limita **operações por mês** (cerca de 10 mil leituras e 2 mil gravações/listagens). Se estourar, a Vercel bloqueia o Blob por 30 dias, o que derruba o painel e o formulário. Por isso:
-
-- Cada coleção é **um único documento JSON**. Abrir uma tela do painel custa 1 ou 2 leituras, e cada salvamento custa 1 gravação. Salvar sem mudança não grava nada.
-- Gravações usam **ETag** (`ifMatch`): se duas gravações acontecerem ao mesmo tempo (ex.: inscrição pelo site enquanto a Bianca edita), a segunda relê e reaplica, sem perder dados.
-- O formato antigo (`contatos/<id>.json`, um arquivo por contato) é migrado sozinho na primeira leitura. Os arquivos antigos ficam como backup.
-
-Acompanhe o uso em **Vercel → Storage → (o Blob) → Usage**.
+Sem `BLOB_READ_WRITE_TOKEN`, as inscrições ficam salvas em `.data/contatos/`. Essa pasta fica fora do git.
 
 ## Publicar na Vercel (uma vez só)
 
@@ -73,8 +59,7 @@ app/                     páginas (site, privacidade, painel) e API
   painel/                login, mini-CRM e exportação CSV
 components/site/         seções do site e formulário
 components/painel/       topo, badge e formulários do painel
-lib/contatos/            tipos, validação, regras, datas, mensagens, armazenamento e CSV
-lib/dados/               documentos JSON com gravação condicional (Blob / arquivo / memória)
+lib/contatos/            tipos, validação, regras, armazenamento e CSV
 lib/auth/                sessão (cookie assinado) e proteção do painel
 tests/                   testes Vitest
 mockups/                 protótipos HTML (só referência, fora do site)

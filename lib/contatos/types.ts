@@ -3,26 +3,15 @@ export type Origem = 'site' | 'instagram' | 'indicacao' | 'outro'
 
 export type Nota = { texto: string; criadoEm: string }
 
-/** Histórico automático (as notas continuam em `notas`). */
-export type Evento =
-  | { tipo: 'etapa'; em: string; de: Etapa; para: Etapa }
-  | { tipo: 'contato'; em: string }
-
 export type Contato = {
   id: string
   nome: string
   email?: string
   whatsapp: string
   objetivo?: string
-  /** YYYY-MM-DD */
-  nascimento?: string
   origem: Origem
   etapa: Etapa
   notas: Nota[]
-  /** Mais recentes primeiro. Ausente em contatos anteriores ao histórico. */
-  eventos?: Evento[]
-  /** YYYY-MM-DD: quando a Bianca quer retomar a conversa. */
-  retomarEm?: string
   consentimentoEm?: string
   criadoEm: string
   atualizadoEm: string

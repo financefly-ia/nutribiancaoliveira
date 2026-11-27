@@ -1,24 +1,50 @@
-import { get, list } from '@vercel/blob'
-import { blobDocs } from '@/lib/dados/documentos-blob'
-import { contatoStore, type ContatoStore } from './store'
+import { del, get, list, put } from '@vercel/blob'
+import { assertId, ordenarRecentes, type ContatoStore } from './store'
 import type { Contato } from './types'
 
-/** Formato antigo: contatos/<id>.json (um blob por contato). Lido só uma vez, na migração. */
-async function legadoBlob(): Promise<Contato[]> {
-  const caminhos: string[] = []
-  let cursor: string | undefined
-  do {
-    const r = await list({ prefix: 'contatos/', cursor, limit: 1000 })
-    caminhos.push(...r.blobs.map((b) => b.pathname))
-    cursor = r.hasMore ? r.cursor : undefined
-  } while (cursor)
-  const out: Contato[] = []
-  for (const p of caminhos) {
-    const r = await get(p, { access: 'private', useCache: false })
-    if (r && r.statusCode === 200) out.push((await new Response(r.stream).json()) as Contato)
-  }
-  return out
+const PREFIXO = 'contatos/'
+const caminho = (id: string) => `${PREFIXO}${id}.json`
+
+async function ler(pathname: string): Promise<Contato | null> {
+  const r = await get(pathname, { access: 'private', useCache: false })
+  if (!r || r.statusCode !== 200) return null
+  return (await new Response(r.stream).json()) as Contato
 }
 
-/** Vercel Blob privado, documento único em dados/contatos.json, nunca exposto ao navegador. */
-export const blobStore = (): ContatoStore => contatoStore(blobDocs(), legadoBlob)
+/** Vercel Blob privado: um JSON por contato, nunca exposto ao navegador. */
+export function blobStore(): ContatoStore {
+  return {
+    async get(id) {
+      assertId(id)
+      return ler(caminho(id))
+    },
+    async put(c) {
+      assertId(c.id)
+      await put(caminho(c.id), JSON.stringify(c), {
+        access: 'private',
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: 'application/json',
+      })
+    },
+    async list() {
+      const caminhos: string[] = []
+      let cursor: string | undefined
+      do {
+        const r = await list({ prefix: PREFIXO, cursor, limit: 1000 })
+        caminhos.push(...r.blobs.map((b) => b.pathname))
+        cursor = r.hasMore ? r.cursor : undefined
+      } while (cursor)
+      const out: Contato[] = []
+      for (let i = 0; i < caminhos.length; i += 10) {
+        const lote = await Promise.all(caminhos.slice(i, i + 10).map(ler))
+        for (const c of lote) if (c) out.push(c)
+      }
+      return ordenarRecentes(out)
+    },
+    async del(id) {
+      assertId(id)
+      await del(caminho(id))
+    },
+  }
+}
