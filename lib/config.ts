@@ -8,6 +8,6 @@ export function siteUrl(): string {
 export const CONTATO_BIANCA = {
   whatsapp: '(41) 98715-5105',
   whatsappLink: 'https://wa.me/5541987155105',
-  instagram: '@nutri.bioliveria',
-  instagramLink: 'https://www.instagram.com/nutri.bioliveria/',
+  instagram: '@nutri.bioliveira',
+  instagramLink: 'https://www.instagram.com/nutri.bioliveira/',
 }
