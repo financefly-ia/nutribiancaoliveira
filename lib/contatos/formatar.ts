@@ -6,7 +6,8 @@ export function formatarWhatsapp(d: string): string {
   return d
 }
 
-export const linkWhatsapp = (d: string) => `https://wa.me/55${d}`
+/** Abre a conversa no WhatsApp; com `texto`, a mensagem já vem escrita (ela só confere e envia). */
+export const linkWhatsapp = (d: string, texto?: string) => `https://wa.me/55${d}${texto ? `?text=${encodeURIComponent(texto)}` : ''}`
 
 export const formatarData = (iso: string) =>
   new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso))

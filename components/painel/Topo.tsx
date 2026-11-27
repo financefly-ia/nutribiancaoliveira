@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { sair } from '@/app/painel/login/actions'
+import { Abas } from './Abas'
 
 export function Topo() {
   return (
@@ -9,6 +10,7 @@ export function Topo() {
           <svg viewBox="0 0 120 130" aria-hidden="true"><use href="#bo" /></svg>
           Painel
         </Link>
+        <Abas />
         <form action={sair}>
           <button className="pn-sair">Sair</button>
         </form>
