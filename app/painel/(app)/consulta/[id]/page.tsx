@@ -45,7 +45,7 @@ export default async function ConsultaPage({ params, searchParams }: {
             id: consulta?.id,
             contatoId,
             data,
-            hora: consulta?.hora ?? '09:00',
+            hora: consulta?.hora ?? (/^([01]\d|2[0-3]):[0-5]\d$/.test(um(sp.hora)) ? um(sp.hora) : '09:00'),
             duracao: String(consulta?.duracaoMin ?? anterior?.duracaoMin ?? 60),
             formato: consulta?.formato ?? anterior?.formato ?? 'online',
             tipo: consulta?.tipo ?? '',
