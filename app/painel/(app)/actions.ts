@@ -5,8 +5,10 @@ import { exigirSessao } from '@/lib/auth/guard'
 import { hojeSP, somarDias } from '@/lib/contatos/datas'
 import { getStore } from '@/lib/contatos/get-store'
 import { salvarModelos } from '@/lib/contatos/mensagens'
+import { atualizarDadosComReferencias } from '@/lib/consultorio/servico'
+import { consultorioStore } from '@/lib/consultorio/store'
 import {
-  adicionarNota, atualizarDados, criarContatoManual, definirRetomada, mudarEtapa, registrarContato,
+  adicionarNota, criarContatoManual, definirRetomada, mudarEtapa, registrarContato,
 } from '@/lib/contatos/servico'
 import { getDocs } from '@/lib/dados/get-docs'
 
@@ -39,7 +41,8 @@ export async function atualizarDadosAction(id: string, prev: EstadoForm, fd: For
   const versao = (prev.versao ?? 0) + 1
   let novoId = id
   try {
-    const r = await atualizarDados(id, valores, getStore())
+    // Se o e-mail mudar, o id do contato muda: planos e consultas vão junto.
+    const r = await atualizarDadosComReferencias(id, valores, getStore(), consultorioStore(getDocs()))
     if (!r.ok) return { erros: r.erros, valores, versao }
     novoId = r.dados.id
   } catch (e) {

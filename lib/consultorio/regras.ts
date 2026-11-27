@@ -1,5 +1,5 @@
 /** Regras puras do consultório: nada aqui lê ou grava; recebe o documento e devolve o que mostrar. */
-import { diasEntre, hojeSP, somarDias, somarMesAno, somarMeses } from '@/lib/contatos/datas'
+import { diaDaSemana, diasEntre, hojeSP, somarDias, somarMesAno, somarMeses } from '@/lib/contatos/datas'
 import {
   tituloFase, type Consulta, type Contrato, type DocConsultorio, type Fase, type ItemModelo, type Parcela, type TipoConsulta,
 } from './tipos'
@@ -104,6 +104,12 @@ export function sugerirTipo(contrato: Contrato | undefined, doContrato: Consulta
 
 const minutos = (hora: string) => Number(hora.slice(0, 2)) * 60 + Number(hora.slice(3, 5))
 
+/** "09:00" + 60 min → "10:00" */
+export function horaFim(c: Pick<Consulta, 'hora' | 'duracaoMin'>): string {
+  const t = minutos(c.hora) + c.duracaoMin
+  return `${String(Math.floor(t / 60) % 24).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`
+}
+
 /** Consultas não desmarcadas do mesmo dia cujo horário se sobrepõe. */
 export function conflitos(todas: Consulta[], nova: { id?: string; data: string; hora: string; duracaoMin: number }): Consulta[] {
   const ini = minutos(nova.hora)
@@ -194,6 +200,12 @@ export function checklist(doc: DocConsultorio, a: Andamento, hoje: string, agora
 
 // ---------- tela Hoje ----------
 
+/** Sábado, domingo e segunda (dia administrativo) passam para a terça seguinte. */
+export function diaDeAtendimento(d: string): string {
+  const dia = diaDaSemana(d)
+  return dia === 6 ? somarDias(d, 3) : dia === 0 ? somarDias(d, 2) : dia === 1 ? somarDias(d, 1) : d
+}
+
 export type ItensHoje = {
   consultas: { consulta: Consulta; ordem: number | null; total: number | null }[]
   entregasAtrasadas: { andamento: Andamento; prazo: string }[]
@@ -238,8 +250,8 @@ export function itensDoHoje(doc: DocConsultorio, hoje: string, agora: string): I
 
     if ((a.situacao === 'ativo' || a.situacao === 'terminando') && a.realizadas >= 1 && !a.proximas.length && a.realizadas < a.total) {
       const ultima = [...a.consultas].reverse().find((c) => c.situacao === 'realizada')!
-      let sugerida = somarDias(ultima.data, 30)
-      if (sugerida < hoje) sugerida = hoje
+      let sugerida = diaDeAtendimento(somarDias(ultima.data, 30))
+      if (sugerida < hoje) sugerida = diaDeAtendimento(hoje)
       if (a.fim && sugerida > a.fim) sugerida = a.fim
       r.retornos.push({ andamento: a, sugerida })
     }

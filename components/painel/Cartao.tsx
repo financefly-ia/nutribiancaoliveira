@@ -39,3 +39,38 @@ export function Cartao({ c, mensagem, aviso, avisoForte, objetivo = true }: {
     </article>
   )
 }
+
+/** Cartão genérico do Hoje (consulta, parcela, pendência…): título leva ao contato, WhatsApp opcional com mensagem pronta. */
+export function CartaoItem({ href, titulo, meta, aviso, avisoForte, whatsapp, mensagem, children, acoes }: {
+  href: string
+  titulo: string
+  meta?: React.ReactNode
+  aviso?: string
+  avisoForte?: boolean
+  whatsapp?: string
+  mensagem?: string
+  children?: React.ReactNode
+  acoes?: React.ReactNode
+}) {
+  return (
+    <article className="pn-card">
+      <Link href={href} className="pn-card-link" aria-label={`Abrir ${titulo}`} />
+      <div className="pn-card-top">
+        <div>
+          <h3>{titulo}</h3>
+          {meta ? <p className="pn-meta">{meta}</p> : null}
+        </div>
+      </div>
+      {children ? <div className="pn-card-corpo">{children}</div> : null}
+      {whatsapp || aviso || acoes ? (
+        <div className="pn-card-foot">
+          {whatsapp ? (
+            <a href={linkWhatsapp(whatsapp, mensagem)} target="_blank" rel="noopener noreferrer" className="pn-btn pn-btn-wa">WhatsApp</a>
+          ) : null}
+          {acoes}
+          {aviso ? <span className={`pn-aviso${avisoForte ? ' forte' : ''}`}>{aviso}</span> : null}
+        </div>
+      ) : null}
+    </article>
+  )
+}

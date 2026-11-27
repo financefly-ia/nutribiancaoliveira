@@ -4,7 +4,7 @@ import {
   adicionarNotaAction, atualizarDadosAction, criarContatoAction, mudarEtapaAction, proximoPassoAction, salvarModelosAction, type EstadoForm,
 } from '@/app/painel/(app)/actions'
 import { formatarWhatsapp, linkWhatsapp, mascararWhatsapp } from '@/lib/contatos/formatar'
-import { LIMITE_MODELO, MODELOS, MODELOS_PADRAO, preencher, type ChaveModelo, type Modelos } from '@/lib/contatos/mensagens'
+import { LIMITE_MODELO, MODELOS, MODELOS_PADRAO, preencher, type ChaveModelo, type Extras, type Modelos } from '@/lib/contatos/mensagens'
 import { ETAPAS, ORIGENS, type Contato, type Etapa } from '@/lib/contatos/types'
 
 const Erro = ({ e }: { e?: string }) => (e ? <p className="pn-erro" role="alert">{e}</p> : null)
@@ -98,9 +98,15 @@ export function ProximoPasso({ id, sugestao = '7' }: { id: string; sugestao?: st
 }
 
 /** Mensagem pronta: escolhe o modelo, ajusta o texto e abre o WhatsApp com ele já escrito (ou copia). */
-export function Mensagem({ c, modelos, inicial }: { c: Pick<Contato, 'nome' | 'objetivo' | 'whatsapp'>; modelos: Modelos; inicial: ChaveModelo }) {
+export function Mensagem({ c, modelos, inicial, extras = {} }: {
+  c: Pick<Contato, 'nome' | 'objetivo' | 'whatsapp'>
+  modelos: Modelos
+  inicial: ChaveModelo
+  /** Dados da próxima consulta/parcela para {data}, {hora}, {formato}, {valor}, {vencimento}. */
+  extras?: Extras
+}) {
   const [chave, setChave] = useState<ChaveModelo>(inicial)
-  const [texto, setTexto] = useState(() => preencher(modelos[inicial], c))
+  const [texto, setTexto] = useState(() => preencher(modelos[inicial], c, extras))
   const [copiado, setCopiado] = useState(false)
   return (
     <div>
@@ -112,7 +118,7 @@ export function Mensagem({ c, modelos, inicial }: { c: Pick<Contato, 'nome' | 'o
         onChange={(e) => {
           const k = e.target.value as ChaveModelo
           setChave(k)
-          setTexto(preencher(modelos[k], c))
+          setTexto(preencher(modelos[k], c, extras))
         }}
       >
         {MODELOS.map((m) => <option key={m.chave} value={m.chave}>{m.rotulo}</option>)}

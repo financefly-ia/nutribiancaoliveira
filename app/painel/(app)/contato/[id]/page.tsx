@@ -3,9 +3,13 @@ import { notFound } from 'next/navigation'
 import { Badge } from '@/components/painel/Badge'
 import { FollowChip } from '@/components/painel/Cartao'
 import { EditarDados, Mensagem, NovaNota, ProximoPasso, SeletorEtapa } from '@/components/painel/Formularios'
+import { BlocoChecklist, BlocoPlano } from '@/components/painel/Plano'
 import { Topo } from '@/components/painel/Topo'
-import { modelosDoPainel, storeDoPainel } from '@/lib/contatos/dados-painel'
-import { diaMes, diasAteAniversario, hojeSP, idadeAtual, relativo } from '@/lib/contatos/datas'
+import { consultorioDoPainel, modelosDoPainel, storeDoPainel } from '@/lib/contatos/dados-painel'
+import { diaMes, diasAteAniversario, hojeSP, idadeAtual, relativo, somarDias } from '@/lib/contatos/datas'
+import type { ChaveModelo } from '@/lib/contatos/mensagens'
+import { extrasConsulta, extrasParcela } from '@/lib/consultorio/extras'
+import { andamento, consultasDoContato, contratoAberto, contratosDoContato, futura } from '@/lib/consultorio/regras'
 import { formatarData, formatarDataHora, formatarWhatsapp } from '@/lib/contatos/formatar'
 import { rotuloEtapa, rotuloOrigem, type Contato } from '@/lib/contatos/types'
 
@@ -38,9 +42,17 @@ export default async function ContatoPage({ params }: { params: Promise<{ id: st
     c = null
   }
   if (!c) notFound()
-  const modelos = await modelosDoPainel()
+  const [modelos, doc] = await Promise.all([modelosDoPainel(), consultorioDoPainel()])
   const hoje = hojeSP()
   const niver = c.nascimento ? diasAteAniversario(c.nascimento, hoje) : null
+  const aberto = contratoAberto(doc, c.id)
+  const and = aberto ? andamento(doc, aberto, hoje) : undefined
+  const consultas = consultasDoContato(doc, c.id)
+  const proxima = consultas.find((x) => futura(x) && x.data >= hoje)
+  const parcela = aberto?.parcelas.find((p) => !p.recebidaEm && !p.dispensadaEm)
+  const anteriores = contratosDoContato(doc, c.id).filter((x) => x.id !== aberto?.id)
+  const modeloInicial: ChaveModelo =
+    niver === 0 ? 'aniversario' : proxima && proxima.data <= somarDias(hoje, 1) && proxima.situacao === 'agendada' ? 'confirmacao' : c.etapa
 
   return (
     <>
@@ -81,8 +93,11 @@ export default async function ContatoPage({ params }: { params: Promise<{ id: st
 
             <section className="pn-box">
               <h2>Mandar mensagem</h2>
-              <Mensagem c={c} modelos={modelos} inicial={niver === 0 ? 'aniversario' : c.etapa} />
+              <Mensagem c={c} modelos={modelos} inicial={modeloInicial} extras={{ ...extrasConsulta(proxima), ...extrasParcela(parcela) }} />
             </section>
+
+            <BlocoPlano c={c} andamento={and} consultas={consultas} anteriores={anteriores} hoje={hoje} />
+            {and ? <BlocoChecklist doc={doc} andamento={and} hoje={hoje} /> : null}
 
             <section className="pn-box">
               <h2>Próximo passo</h2>

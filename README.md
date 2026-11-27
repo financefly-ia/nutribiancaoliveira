@@ -3,12 +3,15 @@
 Site da Bianca com lista de espera e um mini-CRM privado (`/painel`).
 
 - **Site:** Next.js 16 (App Router). O visual é uma cópia fiel de [`mockups/a-editorial.html`](mockups/a-editorial.html).
-- **Dados:** Vercel Blob em modo **privado**, um documento JSON por coleção (`dados/contatos.json`, `dados/config.json`). Veja [Armazenamento](#armazenamento).
+- **Dados:** Vercel Blob em modo **privado**, um documento JSON por coleção: `dados/contatos.json` (leads e pacientes) e `dados/consultorio.json` (agenda, planos, parcelas, checklists e ajustes). Veja [Armazenamento](#armazenamento).
 - **Painel:** `/painel`, protegido por senha, com sessão de 30 dias. Não há link para ele no site.
-  - **Hoje:** conversas para retomar, novos na lista de espera sem contato e aniversários da semana.
+  - **Hoje:** consultas de hoje e amanhã, atrasos (entrega em 48h, parcelas), pendências do checklist, retornos a agendar, planos terminando, renovação da avulsa, conversas para retomar, novos na lista e aniversários.
+  - **Agenda:** semana em lista, nova consulta, aviso de conflito de horário, segunda marcada como dia administrativo.
   - **Contatos:** lista, busca, filtro por etapa e exportação para planilha.
-  - **Contato:** mensagem pronta para o WhatsApp, "Fiz contato hoje" com data para retomar, follow-up, etapa e histórico.
-  - **Mensagens:** modelos de mensagem por etapa (`{nome}`, `{nome_completo}`, `{objetivo}`).
+  - **Contato:** mensagem pronta para o WhatsApp, "Fiz contato hoje", plano (fechar, renovar, encerrar, cancelar), consultas "N de M", parcelas, checklist por fase e histórico.
+  - **Financeiro:** recebido no mês (regime de caixa), a receber, atrasos, planos fechados e últimos 6 meses.
+  - **Ajustes:** mensagens (`{nome}`, `{nome_completo}`, `{objetivo}`, `{data}`, `{hora}`, `{formato}`, `{valor}`, `{vencimento}`), planos e valores, modelos de checklist.
+  - O prazo do plano conta a partir da **primeira consulta realizada** (manual "Consultório 2027").
 - Design e plano: [`docs/superpowers/`](docs/superpowers/).
 
 ## Rodar localmente
@@ -29,6 +32,8 @@ O plano grátis do Vercel Blob limita **operações por mês** (cerca de 10 mil 
 - Cada coleção é **um único documento JSON**. Abrir uma tela do painel custa 1 ou 2 leituras, e cada salvamento custa 1 gravação. Salvar sem mudança não grava nada.
 - Gravações usam **ETag** (`ifMatch`): se duas gravações acontecerem ao mesmo tempo (ex.: inscrição pelo site enquanto a Bianca edita), a segunda relê e reaplica, sem perder dados.
 - O formato antigo (`contatos/<id>.json`, um arquivo por contato) é migrado sozinho na primeira leitura. Os arquivos antigos ficam como backup.
+- `dados/consultorio.json` nasce na primeira abertura do painel com os planos e checklists do manual e com as mensagens que estavam em `dados/config.json` (que fica como backup e deixa de ser lido). Cada tela lê no máximo os dois documentos.
+- Ao trocar o e-mail de um contato, o id dele muda; planos e consultas são levados para o id novo antes, e devolvidos se a edição falhar.
 
 Acompanhe o uso em **Vercel → Storage → (o Blob) → Usage**.
 

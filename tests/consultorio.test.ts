@@ -5,7 +5,7 @@ import { contatoStore, type ContatoStore } from '@/lib/contatos/store'
 import type { Contato } from '@/lib/contatos/types'
 import { dividir, lerReais, reais } from '@/lib/consultorio/dinheiro'
 import {
-  andamento, checklist, chaveItem, conflitos, itensDoHoje, resumoFinanceiro, sugerirTipo,
+  andamento, checklist, chaveItem, conflitos, diaDeAtendimento, itensDoHoje, resumoFinanceiro, sugerirTipo,
 } from '@/lib/consultorio/regras'
 import {
   atualizarDadosComReferencias, cancelarContrato, encerrarContrato, fecharPlano, marcarItem, mudarSituacao, registrarRecebimento, salvarConsulta,
@@ -175,7 +175,7 @@ describe('checklists e Hoje', () => {
     await consulta({ data: '2026-11-10', situacao: 'realizada' })
     const d = await cons.ler()
     const h = itensDoHoje(d, HOJE, `${HOJE} 12:00`)
-    expect(h.retornos.map((r) => r.sugerida)).toEqual(['2026-12-10'])
+    expect(h.retornos.map((r) => r.sugerida)).toEqual(['2026-12-10']) // quinta
   })
   test('parcelas: atrasadas e de hoje aparecem; cartão e dispensadas não', async () => {
     await plano({ primeiroVencimento: '2026-10-27', parcelas: '3' })
@@ -260,4 +260,11 @@ describe('ajustes', () => {
     expect((await cons.ler()).consultas[id].situacao).toBe('confirmada')
     expect((await mudarSituacao(id, 'xx', cons, AGORA)).ok).toBe(false)
   })
+})
+
+test('sugestão de retorno cai em dia de atendimento (ter a sex)', () => {
+  expect(diaDeAtendimento('2026-12-27')).toBe('2026-12-29') // domingo
+  expect(diaDeAtendimento('2026-12-26')).toBe('2026-12-29') // sábado
+  expect(diaDeAtendimento('2026-12-28')).toBe('2026-12-29') // segunda (administrativo)
+  expect(diaDeAtendimento('2026-12-30')).toBe('2026-12-30')
 })

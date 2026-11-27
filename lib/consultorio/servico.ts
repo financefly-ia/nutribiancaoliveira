@@ -81,7 +81,10 @@ export async function fecharPlano(input: EntradaPlano, cons: ConsultorioStore, c
     // Consultas marcadas antes de fechar o plano (lead em conversa) passam a ser deste contrato.
     const desde = somarDias(hoje, -30)
     for (const c of Object.values(d.consultas)) {
-      if (c.contatoId === contato.id && !c.contratoId && c.situacao !== 'desmarcada' && c.data >= desde) {
+      const solta = !c.contratoId && c.situacao !== 'desmarcada' && c.data >= desde
+      // Na renovação, o que já estava agendado daqui para frente passa para o plano novo.
+      const doAnterior = !!aberto && c.contratoId === aberto.id && (c.situacao === 'agendada' || c.situacao === 'confirmada') && c.data >= hoje
+      if (c.contatoId === contato.id && (solta || doAnterior)) {
         c.contratoId = chave
         c.atualizadoEm = iso
       }
@@ -310,8 +313,11 @@ export function salvarChecklists(json: string, cons: ConsultorioStore): Promise<
 /** Troca `de` por `para` em contratos e consultas; devolve quantas referências mudaram. */
 export function moverReferencias(d: DocConsultorio, de: string, para: string): number {
   let n = 0
-  for (const c of Object.values(d.contratos)) if (c.contatoId === de) (c.contatoId = para), n++
-  for (const c of Object.values(d.consultas)) if (c.contatoId === de) (c.contatoId = para), n++
+  for (const c of [...Object.values(d.contratos), ...Object.values(d.consultas)]) {
+    if (c.contatoId !== de) continue
+    c.contatoId = para
+    n++
+  }
   return n
 }
 
