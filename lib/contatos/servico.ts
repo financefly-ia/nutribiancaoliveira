@@ -57,12 +57,11 @@ export async function criarContatoManual(input: unknown, store: ContatoStore, ag
 }
 
 /** Edita nome, e-mail, WhatsApp, objetivo, nascimento e (se informada) origem. Etapa, notas e histórico não mudam aqui. */
-export async function atualizarDados(id: string, input: unknown, store: ContatoStore, agora = new Date()): Promise<Id> {
+export async function atualizarDados(id: string, input: unknown, store: ContatoStore, agora = new Date(), idAleatorio = novoId()): Promise<Id> {
   const bruto = input && typeof input === 'object' ? { ...(input as Record<string, unknown>), etapa: undefined } : input
   const v = validarContatoManual(bruto, hojeSP(agora))
   if (!ID_RE.test(id)) return NAO_ENCONTRADO
   const origemInformada = (input as Record<string, unknown> | null)?.origem
-  const idAleatorio = novoId()
   return store.atualizar((todos) => {
     const atual = todos[id]
     if (!atual) return NAO_ENCONTRADO
@@ -101,6 +100,28 @@ export async function mudarEtapa(id: string, etapa: string, store: ContatoStore,
     c.eventos = [{ tipo: 'etapa', em, de: c.etapa, para: etapa }, ...(c.eventos ?? [])]
     c.etapa = etapa
     if (etapa === 'sem_interesse') delete c.retomarEm
+    c.atualizadoEm = em
+  })
+}
+
+/**
+ * Muda a etapa só se a atual estiver em `de` (ou sempre, sem `de`), registrando no histórico.
+ * Usado pelo consultório: agendar (lista/conversa → agendada), fechar plano (→ paciente), encerrar/cancelar (→ plano vencido).
+ */
+export async function moverEtapaSe(
+  id: string, para: Etapa, store: ContatoStore, opts: { de?: Etapa[]; retomarEm?: string } = {}, agora = new Date(),
+): Promise<Id> {
+  const em = agora.toISOString()
+  return noContato(store, id, (c) => {
+    if (opts.retomarEm !== undefined) {
+      if (opts.retomarEm) c.retomarEm = opts.retomarEm
+      else delete c.retomarEm
+      c.atualizadoEm = em
+    }
+    if (c.etapa === para || (opts.de && !opts.de.includes(c.etapa))) return
+    c.eventos = [{ tipo: 'etapa', em, de: c.etapa, para }, ...(c.eventos ?? [])]
+    c.etapa = para
+    if (para === 'sem_interesse') delete c.retomarEm
     c.atualizadoEm = em
   })
 }

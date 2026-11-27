@@ -25,5 +25,5 @@ test('modelos: padrão, personalizar, voltar ao padrão com texto vazio, limite'
   expect((await lerModelos(d)).conversa).toBe(MODELOS_PADRAO.conversa)
   await salvarModelos(d, { lista: '' })
   expect((await lerModelos(d)).lista).toBe(MODELOS_PADRAO.lista)
-  expect(await salvarModelos(d, { lista: 'x'.repeat(1001) })).toEqual({ ok: false, erros: { lista: 'Use até 1000 caracteres.' } })
+  expect(await salvarModelos(d, { lista: 'x'.repeat(1201) })).toEqual({ ok: false, erros: { lista: 'Use até 1200 caracteres.' } })
 })

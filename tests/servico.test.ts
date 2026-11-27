@@ -128,7 +128,7 @@ test('resumo conta por etapa e site nos últimos 7 dias', () => {
     mk('lista', 'site', '2026-11-20T00:00:00Z'),
     mk('paciente', 'instagram', '2026-12-09T00:00:00Z'),
   ], new Date('2026-12-10T00:00:00Z'))
-  expect(r).toEqual({ total: 3, siteUltimos7Dias: 1, porEtapa: { lista: 2, conversa: 0, agendada: 0, paciente: 1, sem_interesse: 0 } })
+  expect(r).toEqual({ total: 3, siteUltimos7Dias: 1, porEtapa: { lista: 2, conversa: 0, agendada: 0, paciente: 1, plano_vencido: 0, sem_interesse: 0 } })
 })
 
 describe('troca de e-mail mantém id = hash(e-mail)', () => {

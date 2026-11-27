@@ -1,4 +1,4 @@
-export type Etapa = 'lista' | 'conversa' | 'agendada' | 'paciente' | 'sem_interesse'
+export type Etapa = 'lista' | 'conversa' | 'agendada' | 'paciente' | 'plano_vencido' | 'sem_interesse'
 export type Origem = 'site' | 'instagram' | 'indicacao' | 'outro'
 
 export type Nota = { texto: string; criadoEm: string }
@@ -33,6 +33,7 @@ export const ETAPAS: { valor: Etapa; rotulo: string }[] = [
   { valor: 'conversa', rotulo: 'Em conversa' },
   { valor: 'agendada', rotulo: 'Consulta agendada' },
   { valor: 'paciente', rotulo: 'Paciente' },
+  { valor: 'plano_vencido', rotulo: 'Plano vencido' },
   { valor: 'sem_interesse', rotulo: 'Sem interesse no momento' },
 ]
 
