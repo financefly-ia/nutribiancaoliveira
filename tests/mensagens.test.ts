@@ -13,7 +13,7 @@ test('preencher usa o primeiro nome, nome completo e objetivo', () => {
 test('link do WhatsApp leva o texto codificado', () => {
   expect(linkWhatsapp('41987155105')).toBe('https://wa.me/5541987155105')
   expect(linkWhatsapp('41987155105', 'Oi, Ana! 😊 & tal')).toBe(
-    'https://wa.me/5541987155105?text=Oi%2C%20Ana!%20%F0%9F%98%8A%20%26%20tal',
+    'https://api.whatsapp.com/send?phone=5541987155105&text=Oi%2C%20Ana!%20%F0%9F%98%8A%20%26%20tal',
   )
 })
 

@@ -6,8 +6,12 @@ export function formatarWhatsapp(d: string): string {
   return d
 }
 
-/** Abre a conversa no WhatsApp; com `texto`, a mensagem já vem escrita (ela só confere e envia). */
-export const linkWhatsapp = (d: string, texto?: string) => `https://wa.me/55${d}${texto ? `?text=${encodeURIComponent(texto)}` : ''}`
+/**
+ * Abre a conversa no WhatsApp; com `texto`, a mensagem já vem escrita (ela só confere e envia).
+ * Com texto usa api.whatsapp.com/send: o redirecionamento do wa.me estraga emojis de 4 bytes (viram "�").
+ */
+export const linkWhatsapp = (d: string, texto?: string) =>
+  texto ? `https://api.whatsapp.com/send?phone=55${d}&text=${encodeURIComponent(texto)}` : `https://wa.me/55${d}`
 
 export const formatarData = (iso: string) =>
   new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso))
