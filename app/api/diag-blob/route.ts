@@ -1,5 +1,5 @@
 // TEMPORÁRIO: diagnóstico de gravação condicional do Vercel Blob. Só toca em dados/diag-*.json.
-import { BlobPreconditionFailedError, del, put } from '@vercel/blob'
+import { BlobPreconditionFailedError, del, head, put } from '@vercel/blob'
 import { atualizarDocumento, Conflito } from '@/lib/dados/documentos'
 import { blobDocs } from '@/lib/dados/documentos-blob'
 
@@ -39,5 +39,13 @@ export async function GET(req: Request) {
   out.push(await tenta('concorrentes-5', () => Promise.all([4, 5, 6, 7, 8].map((n) => atualizarDocumento(docs, nome, inicial, (d) => { d.itens.push(n) })))))
   out.push(await tenta('lido', async () => (await docs.ler<{ itens: number[] }>(nome))?.dados.itens))
   await del([`dados/${nome}.json`, `dados/${nome}-x.json`]).catch(() => {})
+  // Reproduz a 2ª gravação no documento criado pelo deploy anterior (só contagens, nenhum dado pessoal).
+  out.push(await tenta('contatos-ler', async () => {
+    const h = await head('dados/contatos.json').catch((e) => ({ erro: err(e) }))
+    const l = await docs.ler<{ contatos: Record<string, unknown> }>('contatos')
+    return { head: h && 'size' in h ? { size: h.size, etag: h.etag } : h, lido: l ? { n: Object.keys(l.dados.contatos ?? {}).length, etag: l.etag, chaves: Object.keys(l.dados) } : null }
+  }))
+  out.push(await tenta('contatos-gravar', () =>
+    atualizarDocumento(docs, 'contatos', () => ({ contatos: {} }), (d: Record<string, unknown>) => { d.diag = Date.now() })))
   return Response.json(out)
 }
