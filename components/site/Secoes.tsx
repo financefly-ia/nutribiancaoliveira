@@ -22,14 +22,15 @@ export function Hero() {
         </div>
       </div>
       <div className="hero-visual reveal">
-        <div className="arch-line" />
-        <div className="arch">
+        <div className="painel-linha" />
+        <div className="painel">
           <svg viewBox="0 0 400 600" preserveAspectRatio="none" fill="none" stroke="#F8F6F1" strokeWidth="1" aria-hidden="true">
             <path d="M-20 520 C 80 420, 140 460, 220 340 S 360 180, 440 120" />
             <path d="M-20 300 C 60 260, 120 330, 200 250 S 330 90, 420 60" />
             <path d="M60 640 C 120 520, 260 540, 300 420 S 380 300, 430 330" />
           </svg>
         </div>
+        <svg className="folha-hero" aria-hidden="true"><use href="#folha" /></svg>
         <Image
           src="/images/bianca-recorte.webp"
           alt="Bianca Oliveira, nutricionista"
@@ -51,24 +52,34 @@ export function Hero() {
           <Monograma aria-hidden="true" />
         </div>
       </div>
-      <div className="scroll-hint" aria-hidden="true">
-        Role<i />
-      </div>
+      <a href="#sobre" className="descer">
+        <span className="descer-circ" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+        </span>
+        Conheça a Bianca
+      </a>
     </header>
   )
 }
 
 const PALAVRAS = ['Ciência', 'Individualidade', 'Estratégia', 'Autonomia', 'Resultados construídos']
 
+/** Faixa de valores: estática, no padrão de apoio da identidade (terracota com traços de folha). */
 export function Marquee() {
-  const linha = PALAVRAS.flatMap((p) => [p, '✦'])
   return (
-    <div className="marquee" aria-hidden="true">
-      <div>
-        {[...linha, ...linha].map((p, i) => (
-          <span key={i} className={p === '✦' ? 'dot' : undefined}>{p}</span>
+    <div className="valores">
+      <svg className="valores-padrao" viewBox="0 0 1200 120" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#F6D2BB" strokeWidth="1" aria-hidden="true">
+        <path d="M-40 100 C 120 40, 260 120, 420 60 S 700 -10, 880 50 S 1120 110, 1260 30" />
+        <path d="M-40 30 C 160 80, 320 0, 520 40 S 860 120, 1040 70 S 1200 20, 1260 60" />
+      </svg>
+      <ul className="wrap">
+        {PALAVRAS.map((p) => (
+          <li key={p}>
+            <svg className="valores-sep" aria-hidden="true"><use href="#folha" /></svg>
+            {p}
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   )
 }
@@ -82,12 +93,15 @@ export function Sobre() {
             <div className="frame">
               <Image src="/images/bianca-sobre.jpg" alt="Retrato de Bianca Oliveira sorrindo" width={1024} height={1536} sizes="(max-width: 900px) 92vw, 40vw" />
             </div>
-            <div className="tag">
-              <p>“Porque não basta saber o que precisa ser feito.”</p>
-            </div>
+            <figure className="tag">
+              <blockquote>
+                <p>“Porque não basta saber o que precisa ser feito.</p>
+                <p className="tag-2">É preciso encontrar a melhor maneira de fazer acontecer.”</p>
+              </blockquote>
+            </figure>
           </div>
           <div className="reveal">
-            <div className="eyebrow">Minha história</div>
+            <div className="eyebrow">Quem sou eu</div>
             <h2>
               Prazer, sou a <em>Bianca!</em>
             </h2>
@@ -95,7 +109,6 @@ export function Sobre() {
             <p>A possibilidade de contribuir para a saúde, a qualidade de vida e a forma como uma pessoa se relaciona com o próprio corpo foi o que me fez escolher esse caminho.</p>
             <p>Ao longo da minha trajetória, fui compreendendo que bons resultados não dependem apenas de saber o que comer, mas de entender como colocar esse conhecimento em prática.</p>
             <p>Acredito em uma nutrição que une ciência e individualidade. Que considera exames, hábitos, preferências, rotina e objetivos para construir estratégias realmente aplicáveis à vida de cada pessoa.</p>
-            <blockquote>É preciso encontrar a melhor maneira de fazer acontecer.</blockquote>
           </div>
         </div>
 
@@ -163,6 +176,7 @@ export function Metodo() {
           ))}
         </div>
         <div className="metodo-quote reveal">
+          <svg className="metodo-quote-folha" aria-hidden="true"><use href="#folha" /></svg>
           <p>
             Não se trata apenas de seguir um plano. <em>Trata-se de aprender a fazer escolhas que te aproximem dos seus objetivos.</em>
           </p>
@@ -212,7 +226,6 @@ export function ListaEspera({ children }: { children: React.ReactNode }) {
           <p>Deixe seus dados para receber informações sobre a abertura dos meus atendimentos.</p>
           <p>Quero conhecer seus objetivos e, em breve, compartilhar com você como poderemos trabalhar juntos para alcançá-los.</p>
           <div className="assin">
-            <Monograma aria-hidden="true" />
             <span>Com carinho, Bianca</span>
           </div>
         </div>
