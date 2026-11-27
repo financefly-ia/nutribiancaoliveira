@@ -45,7 +45,12 @@ export async function GET(req: Request) {
     const l = await docs.ler<{ contatos: Record<string, unknown> }>('contatos')
     return { head: h && 'size' in h ? { size: h.size, etag: h.etag } : h, lido: l ? { n: Object.keys(l.dados.contatos ?? {}).length, etag: l.etag, chaves: Object.keys(l.dados) } : null }
   }))
-  out.push(await tenta('contatos-gravar', () =>
+  out.push(await tenta('contatos-gravar-com-correcao', () =>
     atualizarDocumento(docs, 'contatos', () => ({ contatos: {} }), (d: Record<string, unknown>) => { d.diag = Date.now() })))
+  out.push(await tenta('contatos-gravar-de-novo', () =>
+    atualizarDocumento(docs, 'contatos', () => ({ contatos: {} }), (d: Record<string, unknown>) => { d.diag = Date.now() + 1 })))
+  // Limpeza: o documento de contatos ficou desatualizado (criado no deploy que foi revertido); a migração refaz.
+  out.push(await tenta('limpeza', () => del(['dados/contatos.json', 'dados/diag-teste.json']).then(() => 'apagados')))
+  out.push(await tenta('confere', async () => (await docs.ler('contatos')) === null))
   return Response.json(out)
 }

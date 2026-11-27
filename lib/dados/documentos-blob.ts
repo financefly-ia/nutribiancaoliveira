@@ -3,6 +3,12 @@ import { assertNome, Conflito, type Documentos } from './documentos'
 
 const caminho = (nome: string) => `dados/${nome}.json`
 
+/**
+ * Quando a resposta vem comprimida, o `get` devolve ETag fraco (W/"abc"), mas o `ifMatch`
+ * do put só aceita a forma forte ("abc"): sem isso, toda gravação de documento maior dá conflito.
+ */
+export const etagForte = (etag: string) => etag.replace(/^W\//, '')
+
 /** Vercel Blob privado. Cada ler = 1 operação simples; cada gravar = 1 operação avançada. */
 export function blobDocs(): Documentos {
   return {
@@ -10,7 +16,7 @@ export function blobDocs(): Documentos {
       assertNome(nome)
       const r = await get(caminho(nome), { access: 'private', useCache: false })
       if (!r || r.statusCode !== 200) return null
-      return { dados: await new Response(r.stream).json(), etag: r.blob.etag }
+      return { dados: await new Response(r.stream).json(), etag: etagForte(r.blob.etag) }
     },
     async gravar(nome, dados, etag) {
       assertNome(nome)
