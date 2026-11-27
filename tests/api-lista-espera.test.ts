@@ -51,7 +51,7 @@ test('corpo grande demais → 413', async () => {
 })
 
 test('falha do store → 500 com mensagem amigável', async () => {
-  store = { ...memoryStore(), put: async () => { throw new Error('blob fora') } }
+  store = { ...memoryStore(), atualizar: async () => { throw new Error('blob fora') } }
   const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
   const res = await POST(req(valido))
   expect(res.status).toBe(500)
