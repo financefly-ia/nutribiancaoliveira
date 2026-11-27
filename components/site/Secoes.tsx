@@ -80,7 +80,7 @@ export function Sobre() {
         <div className="sobre">
           <div className="sobre-img reveal">
             <div className="frame">
-              <Image src="/images/bianca.jpg" alt="Retrato de Bianca Oliveira" width={1066} height={1600} sizes="(max-width: 900px) 92vw, 40vw" />
+              <Image src="/images/bianca-sobre.jpg" alt="Retrato de Bianca Oliveira sorrindo" width={1024} height={1536} sizes="(max-width: 900px) 92vw, 40vw" />
             </div>
             <div className="tag">
               <p>“Porque não basta saber o que precisa ser feito.”</p>
